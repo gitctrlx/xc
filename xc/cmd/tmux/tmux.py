@@ -10,23 +10,21 @@ from libtmux._internal.query_list import ObjectDoesNotExist
 from rich.table import Table
 from rich.console import Console
 import typer
+from typing import Optional
 from xc.utils.util import is_windows_os
-
-# Check if running on Windows
-if is_windows_os():
-    typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
-    raise SystemExit(1)
 
 # Initialize core objects
 console = Console()
-try:
-    server = libtmux.Server()
-except TmuxCommandNotFound:
-    typer.secho("TMux is not installed on this system", fg=typer.colors.RED)
-    raise SystemExit(1)
-except LibTmuxException as e:
-    typer.secho(f"Failed to connect to TMux server: {str(e)}", fg=typer.colors.RED)
-    raise SystemExit(1)
+server: Optional[libtmux.Server] = None
+if not is_windows_os():
+    try:
+        server = libtmux.Server()
+    except TmuxCommandNotFound:
+        typer.secho("TMux is not installed on this system", fg=typer.colors.RED)
+        raise SystemExit(1)
+    except LibTmuxException as e:
+        typer.secho(f"Failed to connect to TMux server: {str(e)}", fg=typer.colors.RED)
+        raise SystemExit(1)
 
 tmux_app = typer.Typer(help="TMux session management commands", no_args_is_help=True)
 
@@ -44,6 +42,10 @@ def list_sessions() -> None:
     Raises:
         LibTmuxException: If there is an error accessing or listing the sessions.
     """
+    if is_windows_os():
+        typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
+        return
+
     try:
         table = Table(title="TMux Sessions")
         table.add_column("Session Name", style="cyan")
@@ -51,16 +53,19 @@ def list_sessions() -> None:
         table.add_column("Created At", style="green")
         table.add_column("Attached", justify="center")
 
-        for session in server.sessions:
-            # Check if session is attached by looking at attached flag
-            is_attached = session.get("session_attached") == "1"
-            table.add_row(
-                session.name,
-                str(len(session.windows)),
-                session.get("session_created"),
-                "✓" if is_attached else "✗",
-            )
+        if server is not None:
+            for session in server.sessions:
+                # Check if session is attached by looking at attached flag
+                is_attached = session.get("session_attached") == "1"
+                table.add_row(
+                    session.name,
+                    str(len(session.windows)),
+                    session.get("session_created"),
+                    "✓" if is_attached else "✗",
+                )
+        typer.echo()
         console.print(table)
+        typer.echo()
     except LibTmuxException as e:
         typer.secho(f"Error listing sessions: {str(e)}", fg=typer.colors.RED)
 
@@ -79,13 +84,19 @@ def new(
         BadSessionName: If the session name is invalid.
         LibTmuxException: If session creation fails for any other reason.
     """
+    if is_windows_os():
+        typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
+        return
+
     try:
         # Create new session
-        session = server.new_session(
-            session_name=name,
-            attach=False,
-        )
-        typer.secho(f"Created new session: {session.name}", fg=typer.colors.GREEN)
+        if server is not None:
+            session = server.new_session(
+                session_name=name,
+                attach=False,
+            )
+            typer.secho(f"Created new session: {session.name}", fg=typer.colors.GREEN)
+            typer.echo()
     except TmuxSessionExists:
         typer.secho(f"Session '{name}' already exists", fg=typer.colors.RED)
     except BadSessionName as e:
@@ -112,19 +123,25 @@ def kill(
         TmuxObjectDoesNotExist: If the specified session does not exist.
         LibTmuxException: If the session cannot be killed.
     """
+    if is_windows_os():
+        typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
+        return
+
     try:
-        session = server.sessions.get(session_name=name)
-        if not session:
-            typer.secho(f"Session '{name}' does not exist", fg=typer.colors.RED)
-            return
+        if server is not None:
+            session = server.sessions.get(session_name=name)
+            if not session:
+                typer.secho(f"Session '{name}' does not exist", fg=typer.colors.RED)
+                return
 
-        if not force and not typer.confirm(
-            f"Are you sure you want to kill session '{name}'?"
-        ):
-            return
+            if not force and not typer.confirm(
+                f"Are you sure you want to kill session '{name}'?"
+            ):
+                return
 
-        session.kill_session()
-        typer.secho(f"Killed session: {name}", fg=typer.colors.GREEN)
+            session.kill_session()
+            typer.secho(f"Killed session: {name}", fg=typer.colors.GREEN)
+            typer.echo()
     except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
         typer.secho(f"Could not find session '{name}'", fg=typer.colors.RED)
     except LibTmuxException as e:
@@ -144,13 +161,18 @@ def attach(
         TmuxObjectDoesNotExist: If the specified session does not exist.
         LibTmuxException: If the session cannot be attached to.
     """
-    try:
-        session = server.sessions.get(session_name=name)
-        if not session:
-            typer.secho(f"Session '{name}' does not exist", fg=typer.colors.RED)
-            return
+    if is_windows_os():
+        typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
+        return
 
-        session.attach_session()
+    try:
+        if server is not None:
+            session = server.sessions.get(session_name=name)
+            if not session:
+                typer.secho(f"Session '{name}' does not exist", fg=typer.colors.RED)
+                return
+
+            session.attach_session()
     except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
         typer.secho(f"Could not find session '{name}'", fg=typer.colors.RED)
     except LibTmuxException as e:
@@ -174,16 +196,23 @@ def rename(
         BadSessionName: If the new session name is invalid.
         LibTmuxException: If the session cannot be renamed.
     """
-    try:
-        session = server.sessions.get(session_name=old_name)
-        if not session:
-            typer.secho(f"Session '{old_name}' does not exist", fg=typer.colors.RED)
-            return
+    if is_windows_os():
+        typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
+        return
 
-        session.rename_session(new_name)
-        typer.secho(
-            f"Renamed session from '{old_name}' to '{new_name}'", fg=typer.colors.GREEN
-        )
+    try:
+        if server is not None:
+            session = server.sessions.get(session_name=old_name)
+            if not session:
+                typer.secho(f"Session '{old_name}' does not exist", fg=typer.colors.RED)
+                return
+
+            session.rename_session(new_name)
+            typer.secho(
+                f"Renamed session from '{old_name}' to '{new_name}'",
+                fg=typer.colors.GREEN,
+            )
+            typer.echo()
     except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
         typer.secho(f"Could not find session '{old_name}'", fg=typer.colors.RED)
     except TmuxSessionExists:
@@ -213,24 +242,33 @@ def windows(
         TmuxObjectDoesNotExist: If the specified session does not exist.
         LibTmuxException: If windows cannot be listed.
     """
+    if is_windows_os():
+        typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
+        return
+
     try:
-        session = server.sessions.get(session_name=session_name)
-        if not session:
-            typer.secho(f"Session '{session_name}' does not exist", fg=typer.colors.RED)
-            return
+        if server is not None:
+            session = server.sessions.get(session_name=session_name)
+            if not session:
+                typer.secho(
+                    f"Session '{session_name}' does not exist", fg=typer.colors.RED
+                )
+                return
 
-        table = Table(title=f"Windows in Session: {session_name}")
-        table.add_column("Window ID", style="cyan", justify="right")
-        table.add_column("Name", style="green")
-        table.add_column("Active", justify="center")
+            table = Table(title=f"Windows in Session: {session_name}")
+            table.add_column("Window ID", style="cyan", justify="right")
+            table.add_column("Name", style="green")
+            table.add_column("Active", justify="center")
 
-        for window in session.windows:
-            table.add_row(
-                str(window.index),
-                window.name,
-                "✓" if window.get("window_active") == "1" else "✗",
-            )
-        console.print(table)
+            for window in session.windows:
+                table.add_row(
+                    str(window.index),
+                    window.name,
+                    "✓" if window.get("window_active") == "1" else "✗",
+                )
+            typer.echo()
+            console.print(table)
+            typer.echo()
     except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
         typer.secho(f"Could not find session '{session_name}'", fg=typer.colors.RED)
     except LibTmuxException as e:

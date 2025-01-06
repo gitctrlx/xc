@@ -1,31 +1,3 @@
-"""Proxy configuration management commands for XC toolkit.
-
-This module provides a comprehensive interface for managing system proxy settings across
-different operating systems (Windows, Linux, macOS). It outputs proxy configuration
-commands for users to copy and paste.
-
-Key features:
-- Cross-platform support (Windows, Linux, macOS)
-- Environment variable management
-- Shell configuration persistence
-- Rich CLI interface with colored output
-- Run commands with proxy configuration
-
-Typical usage example:
-
-    # Show proxy configuration commands with default host and port
-    xc proxy set
-
-    # Show proxy configuration commands with custom host and port
-    xc proxy set --host 127.0.0.1 --port 7890
-
-    # Display current proxy settings
-    xc proxy show
-
-    # Show commands to remove proxy configuration
-    xc proxy unset
-"""
-
 import os
 from typing import Optional
 import typer

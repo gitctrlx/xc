@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xc-cli"
-version = "0.0.4"
+version = "0.0.5"
 description = "A lightweight and versatile toolkit designed to simplify and enhance your Linux workflow with powerful utilities."
 authors = ["CtrlX <gitctrlx@gmail.com>"]
 license = "GPL-v3"
@@ -13,7 +13,6 @@ xc = "xc.xc:app"
 [tool.poetry.dependencies]
 python = "^3.11"
 typer = "^0.12.5"
-loguru = "^0.7.2"
 art = "^6.4"
 libtmux = "^0.40.1"
 
