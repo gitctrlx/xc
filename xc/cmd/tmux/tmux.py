@@ -1,32 +1,3 @@
-"""TMux session management commands for XC toolkit.
-
-This module provides a command-line interface for managing tmux sessions using the libtmux library.
-It allows users to:
-- List existing sessions and their details
-- Create new sessions with custom names and options
-- Kill existing sessions
-- Attach to running sessions
-- Rename sessions
-- List windows within sessions
-
-Example usage:
-    # List all sessions
-    xc tmux ls
-    xc tmux l
-
-    # Create new session
-    xc tmux new my-session
-    xc tmux n my-session
-
-    # Kill session
-    xc tmux kill my-session
-    xc tmux k my-session
-
-    # Attach to session
-    xc tmux attach my-session
-    xc tmux a my-session
-"""
-
 import libtmux
 from libtmux.exc import (
     TmuxSessionExists,
@@ -64,7 +35,7 @@ tmux_app = typer.Typer(help="TMux session management commands", no_args_is_help=
 def list_sessions() -> None:
     """Lists all tmux sessions and their details.
 
-    Displays a formatted table containing:
+    Displays a formatted table showing:
     - Session name
     - Number of windows
     - Creation timestamp
@@ -98,7 +69,7 @@ def list_sessions() -> None:
 def new(
     name: str = typer.Argument(..., help="Name of the new session"),
 ) -> None:
-    """Creates a new tmux session with the specified configuration.
+    """Creates a new tmux session.
 
     Args:
         name: The name for the new session. Must be unique.
