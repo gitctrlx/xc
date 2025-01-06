@@ -6,7 +6,7 @@ import sys
 import ensurepip
 from typing import Dict, List, Optional, Tuple
 from art import tprint
-from loguru import logger
+import typer
 
 
 def is_windows_os() -> bool:
@@ -67,7 +67,7 @@ def check_and_install_package(
     if find_spec(package_name) is not None:
         return True, f"{package_name} package is already installed"
 
-    logger.warning(f"{package_name} package is not installed, attempting to install...")
+    print(f"{package_name} package is not installed, attempting to install...")
 
     try:
         # Ensure pip is available and up to date
@@ -142,7 +142,7 @@ def print_tmux_shortcuts():
     shortcuts = {
         "Session Management": {
             "tmux new -s <name>": "Create a new named TMux session",
-            "tmux ls": "List all active TMux sessions",
+            "tmux ls": "List all active TMux sessions", 
             "tmux attach -t <name>": "Attach to an existing session by name",
             "tmux kill-session -t <name>": "Terminate a specific session",
             "prefix + d": "Detach from the current session",
@@ -152,7 +152,7 @@ def print_tmux_shortcuts():
             "prefix + c": "Create a new window",
             "prefix + w": "Display interactive window list",
             "prefix + n": "Move to next window",
-            "prefix + p": "Move to previous window",
+            "prefix + p": "Move to previous window", 
             "prefix + <number>": "Switch to window by index number",
             "prefix + &": "Kill the current window",
             "prefix + ,": "Rename current window",
@@ -176,18 +176,16 @@ def print_tmux_shortcuts():
             "enter": "Copy selected text",
             "q": "Exit copy mode",
             "?": "Search backward",
-            "/": "Search forward",
+            "/": "Search forward", 
             "n": "Next search match",
             "N": "Previous search match",
         },
     }
 
-    print("\nTMux Command Reference (default prefix: Ctrl+b)")
-    print("=" * 50)
+    typer.echo(f"\n{typer.style('TMux Command Reference', fg=typer.colors.BRIGHT_BLUE, bold=True)}")
+    typer.echo(f"Default prefix: {typer.style('Ctrl+b', fg=typer.colors.GREEN, bold=True)}\n")
 
     for category, items in shortcuts.items():
-        print(f"\n{category}")
-        print("-" * len(category))
+        typer.echo(f"\n{typer.style(category, fg=typer.colors.MAGENTA, bold=True)}:")
         for key, description in items.items():
-            # Align commands and descriptions for better readability
-            print(f"{key:<30} : {description}")
+            typer.echo(f"  {typer.style(key, fg=typer.colors.CYAN):<30} - {description}")

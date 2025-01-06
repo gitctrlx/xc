@@ -33,11 +33,11 @@ def version_callback(value: bool) -> None:
     """
     if value:
         print_banner()
-        print(f"XC Version: {__version__}")
+        typer.echo(f"XC Version: {typer.style(__version__, fg=typer.colors.GREEN)}")
         raise typer.Exit()
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main(
     version: Optional[bool] = typer.Option(
         None,
