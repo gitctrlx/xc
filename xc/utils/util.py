@@ -1,5 +1,6 @@
 from importlib.util import find_spec
 import os
+import platform
 import subprocess
 import sys
 import ensurepip
@@ -8,13 +9,40 @@ from art import tprint
 from loguru import logger
 
 
+def is_windows_os() -> bool:
+    """Determine if current operating system is Windows.
+
+    Returns:
+        bool: True if Windows, False otherwise
+    """
+    return platform.system().lower() == "windows"
+
+
+def is_linux_os() -> bool:
+    """Determine if current operating system is Linux.
+
+    Returns:
+        bool: True if Linux, False otherwise
+    """
+    return platform.system().lower() == "linux"
+
+
+def is_macos_os() -> bool:
+    """Determine if current operating system is macOS.
+
+    Returns:
+        bool: True if macOS, False otherwise
+    """
+    return platform.system().lower() == "darwin"
+
+
 def print_banner():
     """Print stylized Quanta banner using ASCII art.
 
     Uses the art library's tprint function with the alpha font to create
     an ASCII art banner displaying "Quanta".
     """
-    tprint("XKit", font="alpha")
+    tprint("XC", font="alpha")
 
 
 def check_and_install_package(

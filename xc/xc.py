@@ -8,8 +8,12 @@ from typing import Optional
 import typer
 from loguru import logger
 
-from .utils.util import print_banner
 from . import __version__
+
+from .utils import print_banner
+
+from .cmd.tmux import tmux_app
+from .cmd.proxy import proxy_app
 
 # Initialize Typer app with descriptive help text and disabled completion
 app = typer.Typer(
@@ -17,6 +21,12 @@ app = typer.Typer(
     help="A lightweight and versatile toolkit designed to simplify Linux workflows",
     add_completion=False,
 )
+
+# Add tmux commands as a sub-command group
+app.add_typer(tmux_app, name="tmux", help="TMux session management commands")
+
+# Add proxy commands as a sub-command group
+app.add_typer(proxy_app, name="proxy", help="Proxy configuration management commands")
 
 
 def version_callback(value: bool) -> None:
