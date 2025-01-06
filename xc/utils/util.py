@@ -133,47 +133,61 @@ def check_env_vars(required_vars: List[str]) -> Tuple[bool, Dict[str, str], str]
 
 def print_tmux_shortcuts():
     """
-    Print commonly used tmux keyboard shortcuts in a formatted way.
+    Display a comprehensive guide of TMux keyboard shortcuts and commands.
+
+    This function prints a well-formatted list of commonly used TMux shortcuts,
+    organized by functional categories including session management, window
+    operations, pane controls, and copy mode functionality.
     """
     shortcuts = {
         "Session Management": {
-            "tmux new -s <name>": "Create new named session",
-            "tmux ls": "List sessions",
-            "tmux attach -t <name>": "Attach to named session",
-            "tmux kill-session -t <name>": "Kill named session",
-            "prefix + d": "Detach from current session",
+            "tmux new -s <name>": "Create a new named TMux session",
+            "tmux ls": "List all active TMux sessions",
+            "tmux attach -t <name>": "Attach to an existing session by name",
+            "tmux kill-session -t <name>": "Terminate a specific session",
+            "prefix + d": "Detach from the current session",
+            "tmux kill-server": "Terminate TMux server and all sessions",
         },
         "Window Management": {
-            "prefix + c": "Create new window",
-            "prefix + w": "List windows",
-            "prefix + n": "Next window",
-            "prefix + p": "Previous window",
-            "prefix + <number>": "Switch to window number",
-            "prefix + &": "Kill current window",
-            "prefix + ,": "Rename window",
+            "prefix + c": "Create a new window",
+            "prefix + w": "Display interactive window list",
+            "prefix + n": "Move to next window",
+            "prefix + p": "Move to previous window",
+            "prefix + <number>": "Switch to window by index number",
+            "prefix + &": "Kill the current window",
+            "prefix + ,": "Rename current window",
+            "prefix + .": "Move window to different index",
         },
         "Pane Management": {
-            "prefix + %": "Split pane vertically",
-            'prefix + "': "Split pane horizontally",
-            "prefix + o": "Switch to next pane",
-            "prefix + ;": "Toggle between panes",
+            "prefix + %": "Split current pane vertically",
+            'prefix + "': "Split current pane horizontally",
+            "prefix + o": "Rotate through panes",
+            "prefix + ;": "Toggle between last active panes",
             "prefix + x": "Kill current pane",
-            "prefix + z": "Toggle pane zoom",
-            "prefix + <arrow>": "Switch to pane in direction",
+            "prefix + z": "Toggle pane zoom/fullscreen",
+            "prefix + <arrow>": "Switch focus to pane in direction",
+            "prefix + {": "Swap current pane with previous",
+            "prefix + }": "Swap current pane with next",
         },
-        "Copy Mode": {
+        "Copy Mode (vi mode)": {
             "prefix + [": "Enter copy mode",
-            "prefix + ]": "Paste buffer",
+            "prefix + ]": "Paste from buffer",
             "space": "Start selection",
-            "enter": "Copy selection",
+            "enter": "Copy selected text",
             "q": "Exit copy mode",
+            "?": "Search backward",
+            "/": "Search forward",
+            "n": "Next search match",
+            "N": "Previous search match",
         },
     }
 
-    print("\nTmux Common Shortcuts (prefix is Ctrl+b by default):\n")
+    print("\nTMux Command Reference (default prefix: Ctrl+b)")
+    print("=" * 50)
 
     for category, items in shortcuts.items():
-        print(f"\n{category}:")
+        print(f"\n{category}")
         print("-" * len(category))
         for key, description in items.items():
-            print(f"{key:<25} : {description}")
+            # Align commands and descriptions for better readability
+            print(f"{key:<30} : {description}")

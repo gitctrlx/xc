@@ -1,16 +1,9 @@
-"""XC - A lightweight and versatile toolkit for Linux workflow.
-
-This module serves as the main entry point for the XC CLI application.
-It provides command-line interface functionality using Typer.
-"""
-
 from typing import Optional
 import typer
-from loguru import logger
 
 from . import __version__
 
-from .utils import print_banner
+from .utils import print_banner, print_tmux_shortcuts
 
 from .cmd.tmux import tmux_app
 from .cmd.proxy import proxy_app
@@ -40,7 +33,7 @@ def version_callback(value: bool) -> None:
     """
     if value:
         print_banner()
-        logger.info(f"XC Version: {__version__}")
+        print(f"XC Version: {__version__}")
         raise typer.Exit()
 
 
@@ -54,6 +47,11 @@ def main(
         callback=version_callback,
         is_eager=True,
     ),
+    tmux_help: Optional[bool] = typer.Option(
+        None,
+        "--help-tmux",
+        help="Show TMux shortcuts and commands reference",
+    ),
 ) -> None:
     """XC CLI main entry point.
 
@@ -62,8 +60,11 @@ def main(
 
     Args:
         version: Optional flag to display version information
+        tmux_help: Optional flag to display TMux shortcuts reference
     """
-    pass
+    if tmux_help:
+        print_tmux_shortcuts()
+        raise typer.Exit()
 
 
 if __name__ == "__main__":
