@@ -27,12 +27,17 @@ Example usage:
     xc tmux a my-session
 """
 
-from typing import Optional
 import libtmux
 from rich.table import Table
 from rich.console import Console
 import typer
 from loguru import logger
+from xc.utils.util import is_windows_os
+
+# Check if running on Windows
+if is_windows_os():
+    typer.secho("TMux is not supported on Windows", fg=typer.colors.RED)
+    raise SystemExit(1)
 
 # Initialize core objects
 console = Console()
@@ -78,19 +83,11 @@ def list_sessions() -> None:
 @tmux_app.command(name="new")
 def new(
     name: str = typer.Argument(..., help="Name of the new session"),
-    window_name: Optional[str] = typer.Option(
-        None, "--window", "-w", help="Name of the initial window"
-    ),
-    start_directory: Optional[str] = typer.Option(
-        None, "--directory", "-d", help="Starting directory"
-    ),
 ) -> None:
     """Creates a new tmux session with the specified configuration.
 
     Args:
         name: The name for the new session. Must be unique.
-        window_name: Optional name for the initial window in the session.
-        start_directory: Optional working directory path for the new session.
 
     Raises:
         libtmux.exc.TmuxSessionExists: If a session with the given name exists.
@@ -106,8 +103,6 @@ def new(
         # Create new session
         session = server.new_session(
             session_name=name,
-            window_name=window_name,
-            start_directory=start_directory,
             attach=False,
         )
         logger.info(f"Created new session: {session.name}")
