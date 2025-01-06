@@ -35,10 +35,10 @@ from libtmux.exc import (
     TmuxObjectDoesNotExist,
     BadSessionName,
 )
+from libtmux._internal.query_list import ObjectDoesNotExist
 from rich.table import Table
 from rich.console import Console
 import typer
-from loguru import logger
 from xc.utils.util import is_windows_os
 
 # Check if running on Windows
@@ -91,7 +91,6 @@ def list_sessions() -> None:
             )
         console.print(table)
     except LibTmuxException as e:
-        logger.error(f"Failed to list sessions: {str(e)}")
         typer.secho(f"Error listing sessions: {str(e)}", fg=typer.colors.RED)
 
 
@@ -115,16 +114,12 @@ def new(
             session_name=name,
             attach=False,
         )
-        logger.info(f"Created new session: {session.name}")
         typer.secho(f"Created new session: {session.name}", fg=typer.colors.GREEN)
     except TmuxSessionExists:
-        logger.warning(f"Session '{name}' already exists")
         typer.secho(f"Session '{name}' already exists", fg=typer.colors.RED)
     except BadSessionName as e:
-        logger.warning(str(e))
         typer.secho(str(e), fg=typer.colors.RED)
     except LibTmuxException as e:
-        logger.error(f"Failed to create session: {str(e)}")
         typer.secho(f"Error creating session: {str(e)}", fg=typer.colors.RED)
 
 
@@ -149,7 +144,6 @@ def kill(
     try:
         session = server.sessions.get(session_name=name)
         if not session:
-            logger.warning(f"Session '{name}' does not exist")
             typer.secho(f"Session '{name}' does not exist", fg=typer.colors.RED)
             return
 
@@ -159,13 +153,10 @@ def kill(
             return
 
         session.kill_session()
-        logger.info(f"Killed session: {name}")
         typer.secho(f"Killed session: {name}", fg=typer.colors.GREEN)
-    except TmuxObjectDoesNotExist as e:
-        logger.warning(str(e))
-        typer.secho(str(e), fg=typer.colors.RED)
+    except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
+        typer.secho(f"Could not find session '{name}'", fg=typer.colors.RED)
     except LibTmuxException as e:
-        logger.error(f"Failed to kill session: {str(e)}")
         typer.secho(f"Error killing session: {str(e)}", fg=typer.colors.RED)
 
 
@@ -185,17 +176,13 @@ def attach(
     try:
         session = server.sessions.get(session_name=name)
         if not session:
-            logger.warning(f"Session '{name}' does not exist")
             typer.secho(f"Session '{name}' does not exist", fg=typer.colors.RED)
             return
 
         session.attach_session()
-        logger.info(f"Attached to session: {name}")
-    except TmuxObjectDoesNotExist as e:
-        logger.warning(str(e))
-        typer.secho(str(e), fg=typer.colors.RED)
+    except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
+        typer.secho(f"Could not find session '{name}'", fg=typer.colors.RED)
     except LibTmuxException as e:
-        logger.error(f"Failed to attach to session: {str(e)}")
         typer.secho(f"Error attaching to session: {str(e)}", fg=typer.colors.RED)
 
 
@@ -219,27 +206,21 @@ def rename(
     try:
         session = server.sessions.get(session_name=old_name)
         if not session:
-            logger.warning(f"Session '{old_name}' does not exist")
             typer.secho(f"Session '{old_name}' does not exist", fg=typer.colors.RED)
             return
 
         session.rename_session(new_name)
-        logger.info(f"Renamed session from '{old_name}' to '{new_name}'")
         typer.secho(
             f"Renamed session from '{old_name}' to '{new_name}'", fg=typer.colors.GREEN
         )
-    except TmuxObjectDoesNotExist as e:
-        logger.warning(str(e))
-        typer.secho(str(e), fg=typer.colors.RED)
+    except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
+        typer.secho(f"Could not find session '{old_name}'", fg=typer.colors.RED)
     except TmuxSessionExists:
         msg = f"Session '{new_name}' already exists"
-        logger.warning(msg)
         typer.secho(msg, fg=typer.colors.RED)
     except BadSessionName as e:
-        logger.warning(str(e))
         typer.secho(str(e), fg=typer.colors.RED)
     except LibTmuxException as e:
-        logger.error(f"Failed to rename session: {str(e)}")
         typer.secho(f"Error renaming session: {str(e)}", fg=typer.colors.RED)
 
 
@@ -264,7 +245,6 @@ def windows(
     try:
         session = server.sessions.get(session_name=session_name)
         if not session:
-            logger.warning(f"Session '{session_name}' does not exist")
             typer.secho(f"Session '{session_name}' does not exist", fg=typer.colors.RED)
             return
 
@@ -280,9 +260,7 @@ def windows(
                 "✓" if window.get("window_active") == "1" else "✗",
             )
         console.print(table)
-    except TmuxObjectDoesNotExist as e:
-        logger.warning(str(e))
-        typer.secho(str(e), fg=typer.colors.RED)
+    except (TmuxObjectDoesNotExist, ObjectDoesNotExist):
+        typer.secho(f"Could not find session '{session_name}'", fg=typer.colors.RED)
     except LibTmuxException as e:
-        logger.error(f"Failed to list windows: {str(e)}")
         typer.secho(f"Error listing windows: {str(e)}", fg=typer.colors.RED)
