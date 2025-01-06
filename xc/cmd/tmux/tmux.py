@@ -40,7 +40,7 @@ server = libtmux.Server()
 tmux_app = typer.Typer(help="TMux session management commands", no_args_is_help=True)
 
 
-@tmux_app.command("ls", aliases=["l"])
+@tmux_app.command("ls")
 def list_sessions() -> None:
     """Lists all tmux sessions and their details.
 
@@ -75,7 +75,7 @@ def list_sessions() -> None:
         typer.secho(f"Error listing sessions: {str(e)}", fg=typer.colors.RED)
 
 
-@tmux_app.command(name="new", aliases=["n"])
+@tmux_app.command(name="new")
 def new(
     name: str = typer.Argument(..., help="Name of the new session"),
     window_name: Optional[str] = typer.Option(
@@ -117,7 +117,7 @@ def new(
         typer.secho(f"Error creating session: {str(e)}", fg=typer.colors.RED)
 
 
-@tmux_app.command(name="kill", aliases=["k"])
+@tmux_app.command(name="kill")
 def kill(
     name: str = typer.Argument(..., help="Name of the session to kill"),
     force: bool = typer.Option(
@@ -154,7 +154,7 @@ def kill(
         typer.secho(f"Error killing session: {str(e)}", fg=typer.colors.RED)
 
 
-@tmux_app.command(name="attach", aliases=["a"])
+@tmux_app.command(name="attach")
 def attach(
     name: str = typer.Argument(..., help="Name of the session to attach"),
 ) -> None:
@@ -180,7 +180,7 @@ def attach(
         typer.secho(f"Error attaching to session: {str(e)}", fg=typer.colors.RED)
 
 
-@tmux_app.command(name="rename", aliases=["r"])
+@tmux_app.command(name="rename")
 def rename(
     old_name: str = typer.Argument(..., help="Current session name"),
     new_name: str = typer.Argument(..., help="New session name"),
@@ -211,7 +211,7 @@ def rename(
         typer.secho(f"Error renaming session: {str(e)}", fg=typer.colors.RED)
 
 
-@tmux_app.command(name="windows", aliases=["w"])
+@tmux_app.command(name="windows")
 def windows(
     session_name: str = typer.Argument(..., help="Name of the session"),
 ) -> None:

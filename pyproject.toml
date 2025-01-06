@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xc-cli"
-version = "0.0.2"
+version = "0.0.3"
 description = "A lightweight and versatile toolkit designed to simplify and enhance your Linux workflow with powerful utilities."
 authors = ["CtrlX <gitctrlx@gmail.com>"]
 license = "GPL-v3"
