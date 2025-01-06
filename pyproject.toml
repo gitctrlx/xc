@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "xkit"
+name = "xc-cli"
 version = "0.0.1"
 description = "A lightweight and versatile toolkit designed to simplify and enhance your Linux workflow with powerful utilities."
 authors = ["CtrlX <gitctrlx@gmail.com>"]
 license = "GPL-v3"
 readme = "README.md"
+packages = [{include = "xc"}]
 
 [tool.poetry.scripts]
-xkit = "xkit.xkit:app"
+xc = "xc.xc:app"
 
 [tool.poetry.dependencies]
 python = "^3.11"

@@ -1,6 +1,6 @@
-"""XKit - A lightweight and versatile toolkit for Linux workflow.
+"""XC - A lightweight and versatile toolkit for Linux workflow.
 
-This module serves as the main entry point for the XKit CLI application.
+This module serves as the main entry point for the XC CLI application.
 It provides command-line interface functionality using Typer.
 """
 
@@ -13,7 +13,7 @@ from . import __version__
 
 # Initialize Typer app with descriptive help text and disabled completion
 app = typer.Typer(
-    name="xkit",
+    name="xc",
     help="A lightweight and versatile toolkit designed to simplify Linux workflows",
     add_completion=False,
 )
@@ -30,7 +30,7 @@ def version_callback(value: bool) -> None:
     """
     if value:
         print_banner()
-        logger.info(f"XKit Version: {__version__}")
+        logger.info(f"XC Version: {__version__}")
         raise typer.Exit()
 
 
@@ -45,7 +45,7 @@ def main(
         is_eager=True,
     ),
 ) -> None:
-    """XKit CLI main entry point.
+    """XC CLI main entry point.
 
     A lightweight and versatile toolkit designed to simplify and enhance Linux workflows
     with powerful utilities and automation capabilities.
