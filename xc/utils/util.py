@@ -142,7 +142,7 @@ def print_tmux_shortcuts():
     shortcuts = {
         "Session Management": {
             "tmux new -s <name>": "Create a new named TMux session",
-            "tmux ls": "List all active TMux sessions", 
+            "tmux ls": "List all active TMux sessions",
             "tmux attach -t <name>": "Attach to an existing session by name",
             "tmux kill-session -t <name>": "Terminate a specific session",
             "prefix + d": "Detach from the current session",
@@ -152,7 +152,7 @@ def print_tmux_shortcuts():
             "prefix + c": "Create a new window",
             "prefix + w": "Display interactive window list",
             "prefix + n": "Move to next window",
-            "prefix + p": "Move to previous window", 
+            "prefix + p": "Move to previous window",
             "prefix + <number>": "Switch to window by index number",
             "prefix + &": "Kill the current window",
             "prefix + ,": "Rename current window",
@@ -176,16 +176,22 @@ def print_tmux_shortcuts():
             "enter": "Copy selected text",
             "q": "Exit copy mode",
             "?": "Search backward",
-            "/": "Search forward", 
+            "/": "Search forward",
             "n": "Next search match",
             "N": "Previous search match",
         },
     }
 
-    typer.echo(f"\n{typer.style('TMux Command Reference', fg=typer.colors.BRIGHT_BLUE, bold=True)}")
-    typer.echo(f"Default prefix: {typer.style('Ctrl+b', fg=typer.colors.GREEN, bold=True)}\n")
+    typer.echo(
+        f"\n{typer.style('TMux Command Reference', fg=typer.colors.BRIGHT_BLUE, bold=True)}"
+    )
+    typer.echo(
+        f"Default prefix: {typer.style('Ctrl+b', fg=typer.colors.GREEN, bold=True)}\n"
+    )
 
     for category, items in shortcuts.items():
         typer.echo(f"\n{typer.style(category, fg=typer.colors.MAGENTA, bold=True)}:")
         for key, description in items.items():
-            typer.echo(f"  {typer.style(key, fg=typer.colors.CYAN):<30} - {description}")
+            typer.echo(
+                f"  {typer.style(key, fg=typer.colors.CYAN):<30} - {description}"
+            )
